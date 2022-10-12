@@ -1,5 +1,5 @@
 import unittest
-from cuatro_en_linea import fullColumn, Game
+from cuatro_en_linea import Game
 
 class testCuatroEnLinea(unittest.TestCase):
     def test_board(self):

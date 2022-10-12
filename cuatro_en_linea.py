@@ -1,7 +1,8 @@
-class fullColumn(Exception):
+class FullColumn(Exception):
+    # print('Columna llena')
     pass
 
-class fullRow(Exception):
+class ColumnOutOfRange(Exception):
     pass
 
 class Game():
@@ -10,18 +11,24 @@ class Game():
         self.player = True
         self.token = "x"
         self.game_winner = False
+        self.playing = True
 
     def player_change(self):
         if self.player == True:
-            self.player = False 
+            self.player = False
             self.token = "o"
         else:
             self.player = True
             self.token = "x"
 
     def insert_token(self,column):
-        if 7 < column > 0:
-            raise fullColumn()
+
+        if column < 0 or column >= 8:
+            raise ColumnOutOfRange('Columna fuera de rango')
+        
+        if self.board[0][column] != " ":
+            raise FullColumn('Columna llena')
+        
         else:    
             self.introduce_token(column)
             if self.winner():
@@ -38,12 +45,14 @@ class Game():
         for index in board:
             if board[final][column] == " ":
                 board[final][column] = self.token
+                
                 return board 
             if board[pos][column] == " " and board[next_pos][column] != " ":
                 board[pos][column] = self.token
                 return board
             pos += 1
             next_pos += 1
+
 
     def row_winner(self):
         #row
@@ -132,18 +141,53 @@ class Game():
             return False
         
     def winner(self):
-        if self.column_winner():
-            self.game_winner = True
-            return True
-        elif self.row_winner():
-            self.game_winner = True
-            return True
-        elif self.growing_diagonal_winner():
-            self.game_winner = True
-            return True
-        elif self.decreasing_diagonal_winner():
+        if self.column_winner() == True or self.row_winner() == True or self.growing_diagonal_winner() == True or self.decreasing_diagonal_winner() == True:
             self.game_winner = True
             return True
         else:
             self.game_winner = False
             return False
+
+
+def main():
+    game = Game()
+    print("\n...4 EN LÍNEA...")
+    
+    while game.playing:
+
+        if game.player == True:
+            print('\nEs el turno del Jugador 1')
+        else:
+            print('\nEs el turno del Jugador 2')
+        col = int(input("\nSeleccione la columna donde va a ingresar la ficha [1|2|3|4|5|6|7|8]: "))
+        
+        try:
+            game.insert_token(col-1)
+            print('\n| 1 || 2 || 3 || 4 || 5 || 6 || 7 || 8 |')
+            for row in game.board:
+                print(row)
+        except FullColumn:
+            print('Vuelva a ingresar una ficha')
+        except ColumnOutOfRange:
+            print('Vuelva a ingresar una ficha')
+        
+
+        if game.game_winner == True: 
+            if game.player == True:
+                print(f'\n¡Jugador 1 has ganado!¡Conseguiste un 4 en línea!')
+            else:
+                print(f'\n¡Jugador 2 has ganado!¡Conseguiste un 4 en línea!')
+            game.playing = False
+    
+    play_again = input('\n¿Desea jugar de nuevo? (Y/N): ')
+    
+    while play_again != 'y' and play_again != 'n':
+        play_again = input('\n¿Desea jugar de nuevo? (Y/N): ')
+
+    if play_again.lower() == 'y':
+            main()
+    else:
+        print('\n¡Gracias por jugar!')
+
+if __name__ == '__main__':
+    main()
