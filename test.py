@@ -1,5 +1,5 @@
 import unittest
-from cuatro_en_linea import Game
+from cuatro_en_linea import Game, ColumnOutOfRange, FullColumn
 
 class testCuatroEnLinea(unittest.TestCase):
     def test_board(self):
@@ -7,10 +7,12 @@ class testCuatroEnLinea(unittest.TestCase):
         self.assertEqual(len(game.board), 8)
         self.assertEqual(len(game.board[0]), 8)
     
-    # def test_cambiar_jugador(self):
-    #     game = Game()
-    #     game.cambiar_jugador()
-    #     self.assertEqual(game.cambiar_jugador(),game.jugador == False)
+    def test_player_change(self):
+        game = Game()
+        game.player_change()
+        self.assertEqual(game.player, False)
+        game.player_change()
+        self.assertEqual(game.player, True)
 
     def test_insert_token(self):
         game = Game()
@@ -22,6 +24,19 @@ class testCuatroEnLinea(unittest.TestCase):
         self.assertEqual(game.board[7][5],"o")
         self.assertEqual(game.board[7][6],"x")
         self.assertEqual(game.board[6][6],"o")
+        with self.assertRaises(ColumnOutOfRange):
+            game.insert_token(9)
+        
+        with self.assertRaises(FullColumn):
+            game.insert_token(3)
+            game.insert_token(3)
+            game.insert_token(3)
+            game.insert_token(3)
+            game.insert_token(3)
+            game.insert_token(3)
+            game.insert_token(3)
+            game.insert_token(3)
+            game.insert_token(3)
     
     def test_column_winner(self):
         game = Game()
